@@ -12,32 +12,36 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname)));
 
-// MySQL Connection Pool
-const pool = mysql.createPool({
+// MySQL connection config — env-driven so it works locally and on managed hosts
+const DB_NAME = process.env.MYSQL_DATABASE || 'starride';
+const useSSL = /^(true|require|required|1)$/i.test(process.env.MYSQL_SSL || '');
+const baseDbConfig = {
     host: process.env.MYSQL_HOST || 'localhost',
+    port: Number(process.env.MYSQL_PORT) || 3306,
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || '',
-    database: process.env.MYSQL_DATABASE || 'starride',
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
-});
+    queueLimit: 0,
+    ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {})
+};
+
+// MySQL Connection Pool
+const pool = mysql.createPool({ ...baseDbConfig, database: DB_NAME });
 
 // Initialize Database
 async function initDatabase() {
     try {
-        // Create database if not exists
-        const tempPool = mysql.createPool({
-            host: process.env.MYSQL_HOST || 'localhost',
-            user: process.env.MYSQL_USER || 'root',
-            password: process.env.MYSQL_PASSWORD || '',
-            waitForConnections: true,
-            connectionLimit: 10
-        });
-        
-        await tempPool.query(`CREATE DATABASE IF NOT EXISTS starride`);
-        await tempPool.end();
-        
+        // On self-hosted MySQL we can create the database; managed hosts pre-create
+        // it and often forbid this, so don't let a failure here abort table setup.
+        try {
+            const tempPool = mysql.createPool(baseDbConfig);
+            await tempPool.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
+            await tempPool.end();
+        } catch (e) {
+            console.log('Skipping CREATE DATABASE (using existing DB):', e.message);
+        }
+
         // Create tables
         const conn = await pool.getConnection();
         

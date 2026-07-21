@@ -1,0 +1,24 @@
+# Render Blueprint — deploys the Star Ride Node server on the free plan.
+# Docs: https://render.com/docs/blueprint-spec
+# The MYSQL_* secret values are entered in the Render dashboard (sync: false),
+# never committed to the repo. Point them at your Aiven MySQL database.
+services:
+  - type: web
+    name: star-ride
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MYSQL_HOST
+        sync: false
+      - key: MYSQL_PORT
+        sync: false
+      - key: MYSQL_USER
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        sync: false
+      - key: MYSQL_SSL
+        value: "true"
