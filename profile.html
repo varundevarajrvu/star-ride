@@ -18,14 +18,14 @@
 
 <header class="site-header">
     <div class="header-brand">
-        <a href="Index.html" style="text-decoration:none;border:none;">
+        <a href="index.html" style="text-decoration:none;border:none;">
             <h1><span>STAR</span> RIDE</h1>
             <span class="subtitle">My Profile</span>
         </a>
     </div>
     <nav class="header-nav">
         <a href="Bikes.html" class="btn btn-primary btn-sm">Book Bikes</a>
-        <a href="admin-login.html" class="btn btn-danger btn-sm">Admin</a>
+        <a href="Admin-login.html" class="btn btn-danger btn-sm">Admin</a>
         <div id="userBadge"></div>
     </nav>
 </header>
@@ -135,7 +135,7 @@ function displayBookings(bookings) {
     const list = document.getElementById('bookingList');
     
     if (!bookings || bookings.length === 0) {
-        list.innerHTML = '<p class="text-white-50">No bookings yet. <a href="bikes.html" style="color:var(--accent);">Book a bike!</a></p>';
+        list.innerHTML = '<p class="text-white-50">No bookings yet. <a href="Bikes.html" style="color:var(--accent);">Book a bike!</a></p>';
         return;
     }
     
