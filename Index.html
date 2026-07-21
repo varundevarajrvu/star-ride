@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAR RIDE — Premium Bike Rentals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+<div class="speed-bg"></div>
+<div class="grid-bg"></div>
+
+<header class="site-header">
+    <div class="header-brand">
+        <h1><span>STAR</span> RIDE</h1>
+        <span class="subtitle">Premium Bike Rentals</span>
+    </div>
+    <nav class="header-nav">
+        <a href="login.html" class="btn btn-warning btn-sm">Login</a>
+        <a href="signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+        <a href="admin-login.html" class="btn btn-danger btn-sm">Admin</a>
+    </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero-section">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-content">
+        <span class="hero-eyebrow">Premium &bull; Affordable &bull; Instant</span>
+        <h1 class="hero-title">Ride the <span>Stars</span></h1>
+        <p class="hero-sub">Experience the thrill of premium bikes at unbeatable prices. Book in seconds, ride in style.</p>
+        <div class="hero-actions">
+            <a href="signup.html" class="btn-hero-primary">Get Started Free</a>
+            <a href="Bikes.html" class="btn-hero-secondary">View Fleet &rarr;</a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-row">
+    <div class="stat-item">
+        <span class="stat-number">50+</span>
+        <span class="stat-label">Premium Bikes</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">&#8377;99</span>
+        <span class="stat-label">Starting / Hour</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-number">1K+</span>
+        <span class="stat-label">Happy Riders</span>
+    </div>
+</div>
+
+<!-- Features -->
+<section class="features-section">
+    <p class="features-heading">Why Choose Star Ride</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <span class="feature-icon">&#9889;</span>
+            <div class="feature-title">Instant Booking</div>
+            <div class="feature-desc">Reserve your bike in under 60 seconds. No paperwork, no queues — just ride.</div>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">&#127949;</span>
+            <div class="feature-title">Premium Fleet</div>
+            <div class="feature-desc">Curated collection of top-tier bikes. Every ride is an experience worth having.</div>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">&#128274;</span>
+            <div class="feature-title">Secure Payments</div>
+            <div class="feature-desc">UPI &amp; QR-based transactions. Your money is always safe, always verified.</div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Strip -->
+<section style="text-align:center;padding:52px 24px;border-top:1px solid rgba(255,255,255,0.05);">
+    <h2 style="font-family:'Syncopate',sans-serif;font-size:1.4rem;letter-spacing:3px;color:#EEF2FF;margin-bottom:10px;text-transform:uppercase;">Ready to Hit the Road?</h2>
+    <p style="font-family:'Jost',sans-serif;color:#8896B3;margin-bottom:28px;font-size:.95rem;">Join thousands of riders. No deposit, cancel anytime.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+        <a href="login.html" class="btn btn-warning">Login</a>
+        <a href="signup.html" class="btn btn-primary">Create Account</a>
+        <a href="Bikes.html" class="btn btn-success">Browse Bikes</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <p style="margin:0;">
+        &copy; 2025 <strong style="color:var(--accent);">STAR RIDE</strong> &mdash; All rights reserved.
+        &nbsp;&bull;&nbsp; <a href="contact.html" style="color:var(--accent);text-decoration:none;border:none;">Contact Us</a>
+        &nbsp;&bull;&nbsp; <a href="admin-login.html" style="color:var(--accent);text-decoration:none;border:none;">Admin</a>
+    </p>
+</footer>
+
+<script>
+/* ── Warp-speed particle canvas ── */
+(function () {
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const COLORS = ['#FF4D00', '#4895EF', '#ffffff', '#FF6B25', '#62AAFF', '#FF8040'];
+
+    function resize() {
+        canvas.width  = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function Star() { this.reset(true); }
+    Star.prototype.reset = function (init) {
+        this.angle  = Math.random() * Math.PI * 2;
+        this.speed  = Math.random() * 2.4 + 0.6;
+        this.dist   = init ? Math.random() * Math.min(canvas.width, canvas.height) * 0.45 : 2;
+        this.len    = Math.random() * 4 + 1;
+        this.alpha  = Math.random() * 0.55 + 0.2;
+        this.color  = COLORS[Math.floor(Math.random() * COLORS.length)];
+        this.cx     = canvas.width  / 2;
+        this.cy     = canvas.height / 2;
+    };
+    Star.prototype.update = function () {
+        this.dist += this.speed;
+        const x = this.cx + Math.cos(this.angle) * this.dist;
+        const y = this.cy + Math.sin(this.angle) * this.dist;
+        if (x < -20 || x > canvas.width + 20 || y < -20 || y > canvas.height + 20) this.reset(false);
+    };
+    Star.prototype.draw = function () {
+        const x   = this.cx + Math.cos(this.angle) * this.dist;
+        const y   = this.cy + Math.sin(this.angle) * this.dist;
+        const tx  = x - Math.cos(this.angle) * this.len * this.speed;
+        const ty  = y - Math.sin(this.angle) * this.len * this.speed;
+        ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y);
+        ctx.strokeStyle = this.color;
+        ctx.globalAlpha = this.alpha;
+        ctx.lineWidth   = 1.4;
+        ctx.stroke();
+    };
+
+    const stars = Array.from({ length: 220 }, () => new Star());
+
+    function loop() {
+        ctx.globalAlpha = 1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => { s.update(); s.draw(); });
+        requestAnimationFrame(loop);
+    }
+    loop();
+})();
+
+/* ── Feature-card stagger entrance ── */
+(function () {
+    const cards = document.querySelectorAll('.feature-card');
+    if (!cards.length) return;
+    const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            const siblings = [...entry.target.parentElement.querySelectorAll('.feature-card')];
+            const idx = siblings.indexOf(entry.target);
+            setTimeout(function () { entry.target.classList.add('visible'); }, idx * 130);
+            io.unobserve(entry.target);
+        });
+    }, { threshold: 0.12 });
+    cards.forEach(function (c) { io.observe(c); });
+})();
+
+/* ── Stat counter ── */
+(function () {
+    function countUp(el) {
+        const original = el.dataset.target || el.innerText;
+        el.dataset.target = original;
+        const prefix = original.match(/^[^\d]*/)[0];
+        const suffix = original.match(/\D+$/)?.[0] || '';
+        const raw    = original.replace(/\D/g, '');
+        if (!raw) return;
+        const target   = parseInt(raw, 10);
+        const duration = 1800;
+        const t0       = performance.now();
+        (function tick(now) {
+            const p = Math.min((now - t0) / duration, 1);
+            const e = 1 - Math.pow(1 - p, 3);
+            el.innerText = prefix + Math.round(target * e) + suffix;
+            if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+    }
+
+    const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            countUp(entry.target);
+            io.unobserve(entry.target);
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-number').forEach(function (el) { io.observe(el); });
+})();
+</script>
+
+</body>
+</html>

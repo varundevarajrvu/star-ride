@@ -1,0 +1,24 @@
+# Dependencies (reinstall with `npm install`)
+node_modules/
+
+# Environment / secrets — never commit real credentials
+.env
+
+# OS junk
+.DS_Store
+
+# Local editor / tooling settings
+.claude/
+
+# Report & presentation (not part of the app)
+*.pdf
+*.tex
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+
+# Screenshots (kept out of the repo; logo.png is intentionally NOT ignored)
+ss_*.png

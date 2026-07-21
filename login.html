@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — STAR RIDE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        .auth-wrap { min-height:calc(100vh - 74px); display:flex; align-items:center; justify-content:center; padding:40px 16px; }
+        .auth-card { width:100%; max-width:400px; background:var(--surface); border:1px solid var(--accent-border); border-radius:8px; overflow:hidden; box-shadow:5px 5px 0 var(--dark), 0 0 40px var(--accent-dim); position:relative; }
+        .auth-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),var(--blue)); }
+        .auth-top { background:linear-gradient(135deg,var(--accent-dim),rgba(72,149,239,.06)); border-bottom:1px solid var(--border); padding:28px 32px; text-align:center; }
+        .auth-top h2 { font-family:'Syncopate',sans-serif; font-size:1rem; font-weight:700; letter-spacing:3px; color:var(--text); margin:8px 0 0; }
+        .auth-top p { font-family:'Jost',sans-serif; font-size:.75rem; color:var(--text-muted); margin:4px 0 0; }
+        .auth-body { padding:28px 32px 32px; }
+        .field-group { margin-bottom:16px; }
+        .field-group label { font-family:'Jost',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--accent) !important; margin-bottom:6px; display:block; }
+        .field-group input { width:100%; padding:13px 16px; border:1px solid var(--border-strong) !important; border-radius:4px !important; background:rgba(4,5,10,.8) !important; color:var(--text) !important; font-family:'Jost',sans-serif; font-size:15px; outline:none; transition:all .22s; margin-bottom:0; }
+        .field-group input:focus { border-color:var(--accent) !important; box-shadow:0 0 0 3px var(--accent-dim) !important; }
+        .field-group input::placeholder { color:rgba(136,150,179,.4); font-style:italic; }
+        .auth-links { font-family:'Jost',sans-serif; font-size:12px; color:var(--text-muted); text-align:center; margin-top:14px; }
+        .auth-links a { color:var(--accent); text-decoration:none; border:none; font-weight:600; }
+        .auth-links a:hover { color:var(--blue); }
+        #msg { font-family:'Jost',sans-serif; font-size:13px; text-align:center; min-height:20px; margin-top:12px; }
+    </style>
+</head>
+<body>
+<div class="speed-bg"></div>
+<div class="grid-bg"></div>
+
+<header class="site-header">
+    <div class="header-brand">
+        <a href="Index.html" style="text-decoration:none;border:none;">
+            <h1><span>STAR</span> RIDE</h1>
+            <span class="subtitle">Premium Bike Rentals</span>
+        </a>
+    </div>
+    <nav class="header-nav">
+        <a href="Index.html" class="btn btn-warning btn-sm">&larr; Home</a>
+    </nav>
+</header>
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-top">
+            <span style="font-size:2rem;display:block;line-height:1;">&#128273;</span>
+            <h2>Welcome Back</h2>
+            <p>Sign in to your account</p>
+        </div>
+        <div class="auth-body">
+            <div class="field-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+            </div>
+            <div class="field-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+            </div>
+            <button class="btn btn-primary w-100 mt-2" onclick="login()">Sign In &rarr;</button>
+            <div id="msg"></div>
+            <div class="auth-links mt-3"><a href="forgot.html">Forgot password?</a></div>
+            <div class="auth-links">No account? <a href="signup.html">Create one free</a></div>
+            <div class="auth-links mt-2"><a href="admin-login.html" style="color:#EF4444;">Admin Login</a></div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function login() {
+    let email = document.getElementById("email").value
+    let password = document.getElementById("password").value
+    let msg = document.getElementById("msg")
+
+    if (email === "" || password === "") {
+        msg.innerHTML = "&#9888; All fields required!"; msg.style.color = "#EF4444"; return
+    }
+    try {
+        let response = await fetch('/api/login', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        })
+        let data = await response.json()
+        if (response.ok && data.success) {
+            localStorage.setItem('currentUser', JSON.stringify(data.user))
+            msg.innerHTML = "&#10003; Logged in! Redirecting..."; msg.style.color = "#4895EF"
+            setTimeout(() => { window.location.href = "Bikes.html" }, 1000)
+        } else {
+            msg.innerHTML = "&#9888; " + data.error; msg.style.color = "#EF4444"
+        }
+    } catch (error) {
+        msg.innerHTML = "&#9888; Server error. Is server running?"; msg.style.color = "#EF4444"
+    }
+}
+</script>
+</body>
+</html>
