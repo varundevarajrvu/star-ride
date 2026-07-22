@@ -181,6 +181,28 @@ app.get('/api/bikes', async (req, res) => {
     }
 });
 
+// TEMP diagnostic — remove after deployment is verified. Reports DB config
+// presence and the real connection error, without exposing the password.
+app.get('/api/_dbcheck', async (req, res) => {
+    const info = {
+        host: process.env.MYSQL_HOST || null,
+        port: Number(process.env.MYSQL_PORT) || 3306,
+        user: process.env.MYSQL_USER || null,
+        database: DB_NAME,
+        passwordSet: !!process.env.MYSQL_PASSWORD,
+        ssl: useSSL
+    };
+    try {
+        const conn = await pool.getConnection();
+        try {
+            const [t] = await conn.query('SELECT COUNT(*) AS n FROM bikes');
+            res.json({ ok: true, ...info, bikeCount: t[0].n });
+        } finally { conn.release(); }
+    } catch (e) {
+        res.json({ ok: false, ...info, code: e.code, errno: e.errno, message: e.message });
+    }
+});
+
 // GET ALL USERS
 app.get('/api/users', async (req, res) => {
     try {
