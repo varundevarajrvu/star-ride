@@ -2,6 +2,9 @@
 
 A full-stack bike rental website built with Node.js, Express, and MySQL.
 
+**🔗 Live demo:** [star-ride-cidx.onrender.com](https://star-ride-cidx.onrender.com)
+*(Hosted free on Render + Aiven MySQL. The free server sleeps after inactivity, so the first visit may take ~30–50s to wake up.)*
+
 ## Features
 - User registration & login (secure password hashing with bcrypt)
 - Bike listing with images (seeded automatically on first run)
@@ -47,6 +50,18 @@ A full-stack bike rental website built with Node.js, Express, and MySQL.
    http://localhost:3000
    ```
 
+## Deployment (Render + Aiven)
+
+The app is cloud-ready and deploys with zero code changes:
+
+- **Database**: a managed MySQL (e.g. [Aiven](https://aiven.io) free tier). Copy its connection details.
+- **Server**: a Node web service (e.g. [Render](https://render.com) free tier), auto-deployed from this repo via [`render.yaml`](render.yaml).
+- **Config**: set **one** environment variable, `DATABASE_URL`, to your database's connection URI
+  (Aiven's "Service URI"). Individual `MYSQL_HOST` / `MYSQL_PORT` / `MYSQL_USER` /
+  `MYSQL_PASSWORD` / `MYSQL_DATABASE` / `MYSQL_SSL` vars are also supported as an alternative.
+
+On first boot the server creates the tables and seeds the bikes automatically.
+
 ## Database
 
 The schema is defined in [`database_code.sql`](database_code.sql). On startup, `server.js`
@@ -63,7 +78,7 @@ also runs `CREATE DATABASE IF NOT EXISTS` and creates the tables automatically:
   ├── database_code.sql    # MySQL schema
   ├── package.json         # Dependencies
   ├── .env.example         # Env var template (copy to .env)
-  ├── Index.html           # Landing page
+  ├── index.html           # Landing page
   ├── login.html           # Login page
   ├── signup.html          # Signup page
   ├── Bikes.html           # Bike listing & booking
