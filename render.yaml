@@ -10,15 +10,7 @@ services:
     buildCommand: npm install
     startCommand: npm start
     envVars:
-      - key: MYSQL_HOST
+      # One value only: paste your database's full connection URI here
+      # (in Aiven this is the "Service URI"). Entered in the dashboard, never committed.
+      - key: DATABASE_URL
         sync: false
-      - key: MYSQL_PORT
-        sync: false
-      - key: MYSQL_USER
-        sync: false
-      - key: MYSQL_PASSWORD
-        sync: false
-      - key: MYSQL_DATABASE
-        sync: false
-      - key: MYSQL_SSL
-        value: "true"

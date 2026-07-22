@@ -12,19 +12,45 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname)));
 
-// MySQL connection config — env-driven so it works locally and on managed hosts
-const DB_NAME = process.env.MYSQL_DATABASE || 'starride';
-const useSSL = /^(true|require|required|1)$/i.test(process.env.MYSQL_SSL || '');
-const baseDbConfig = {
-    host: process.env.MYSQL_HOST || 'localhost',
-    port: Number(process.env.MYSQL_PORT) || 3306,
-    user: process.env.MYSQL_USER || 'root',
-    password: process.env.MYSQL_PASSWORD || '',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {})
-};
+// MySQL connection config — env-driven so it works locally and on managed hosts.
+// SIMPLEST for cloud: set ONE variable, DATABASE_URL, to your host's full
+// connection URI (e.g. Aiven's "Service URI"). Otherwise set individual MYSQL_* vars.
+const DB_URL = process.env.DATABASE_URL || process.env.MYSQL_URL || '';
+const useSSL = /^(true|require|required|1)$/i.test(process.env.MYSQL_SSL || '')
+    || /ssl-?mode=required/i.test(DB_URL);
+
+let baseDbConfig, DB_NAME;
+if (DB_URL) {
+    try {
+        const u = new URL(DB_URL);
+        DB_NAME = decodeURIComponent(u.pathname.replace(/^\//, '')) || 'defaultdb';
+        baseDbConfig = {
+            host: u.hostname,
+            port: Number(u.port) || 3306,
+            user: decodeURIComponent(u.username),
+            password: decodeURIComponent(u.password),
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0,
+            ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {})
+        };
+    } catch (e) {
+        console.log('Invalid DATABASE_URL, falling back to MYSQL_* vars:', e.message);
+    }
+}
+if (!baseDbConfig) {
+    DB_NAME = process.env.MYSQL_DATABASE || 'starride';
+    baseDbConfig = {
+        host: process.env.MYSQL_HOST || 'localhost',
+        port: Number(process.env.MYSQL_PORT) || 3306,
+        user: process.env.MYSQL_USER || 'root',
+        password: process.env.MYSQL_PASSWORD || '',
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+        ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {})
+    };
+}
 
 // MySQL Connection Pool
 const pool = mysql.createPool({ ...baseDbConfig, database: DB_NAME });
@@ -185,11 +211,12 @@ app.get('/api/bikes', async (req, res) => {
 // presence and the real connection error, without exposing the password.
 app.get('/api/_dbcheck', async (req, res) => {
     const info = {
-        host: process.env.MYSQL_HOST || null,
-        port: Number(process.env.MYSQL_PORT) || 3306,
-        user: process.env.MYSQL_USER || null,
+        via: DB_URL ? 'DATABASE_URL' : 'MYSQL_* vars',
+        host: baseDbConfig.host,
+        port: baseDbConfig.port,
+        user: baseDbConfig.user,
         database: DB_NAME,
-        passwordSet: !!process.env.MYSQL_PASSWORD,
+        passwordSet: !!baseDbConfig.password,
         ssl: useSSL
     };
     try {
